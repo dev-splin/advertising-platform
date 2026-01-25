@@ -11,6 +11,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 광고 계약 엔티티
+ * 도메인 모델로서 비즈니스 로직을 포함합니다.
+ */
 @Entity
 @Table(name = "contract")
 @Getter
@@ -61,5 +65,59 @@ public class Contract {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    /**
+     * 계약 기간이 유효한지 검증합니다.
+     * 종료일은 시작일로부터 최소 28일 이후여야 합니다.
+     */
+    public boolean isValidPeriod() {
+        return endDate.isAfter(startDate.plusDays(27));
+    }
+    
+    /**
+     * 계약 금액이 유효한 범위 내에 있는지 검증합니다.
+     * 최소 10,000원, 최대 1,000,000원
+     */
+    public boolean isValidAmount() {
+        BigDecimal minAmount = new BigDecimal("10000");
+        BigDecimal maxAmount = new BigDecimal("1000000");
+        return amount.compareTo(minAmount) >= 0 && amount.compareTo(maxAmount) <= 0;
+    }
+    
+    /**
+     * 계약 시작일이 오늘 이후인지 확인합니다.
+     */
+    public boolean isStartDateValid() {
+        return !startDate.isBefore(LocalDate.now());
+    }
+    
+    /**
+     * 계약 상태를 업데이트합니다.
+     * 현재 날짜를 기준으로 자동으로 상태를 결정합니다.
+     */
+    public void updateStatus() {
+        LocalDate today = LocalDate.now();
+        if (status == ContractStatus.CANCELLED || status == ContractStatus.COMPLETED) {
+            return; // 취소되거나 종료된 계약은 상태 변경 불가
+        }
+        
+        if (startDate.isAfter(today)) {
+            this.status = ContractStatus.PENDING;
+        } else if (endDate.isBefore(today)) {
+            this.status = ContractStatus.COMPLETED;
+        } else {
+            this.status = ContractStatus.IN_PROGRESS;
+        }
+    }
+    
+    /**
+     * 계약을 취소합니다.
+     */
+    public void cancel() {
+        if (status == ContractStatus.COMPLETED) {
+            throw new IllegalStateException("이미 종료된 계약은 취소할 수 없습니다.");
+        }
+        this.status = ContractStatus.CANCELLED;
     }
 }

@@ -93,3 +93,65 @@ backend/
 - `details`: 상세 에러 정보 (필드별 검증 오류 등, 선택적)
 - `timestamp`: 에러 발생 시각
 - `status`: HTTP 상태 코드
+
+## 테스트 실행
+
+### 전체 테스트 실행
+```bash
+cd backend
+mvn test
+```
+
+### 특정 테스트 클래스 실행
+```bash
+mvn test -Dtest=ContractServiceTest
+```
+
+### 테스트 커버리지 확인
+```bash
+mvn test
+```
+
+테스트 실행 후 커버리지 리포트가 자동으로 생성됩니다:
+- 리포트 위치: `target/site/jacoco/index.html`
+- 브라우저에서 열어서 확인할 수 있습니다.
+
+또는 직접 리포트만 생성:
+```bash
+mvn jacoco:report
+```
+
+## 구현된 주요 기능
+
+### 1. 도메인 모델
+- **Contract**: 계약 엔티티에 비즈니스 로직 메서드 포함
+  - `isValidPeriod()`: 계약 기간 검증 (최소 28일)
+  - `isValidAmount()`: 계약 금액 검증 (10,000원 ~ 1,000,000원)
+  - `updateStatus()`: 계약 상태 자동 업데이트
+  - `cancel()`: 계약 취소
+
+### 2. 비즈니스 로직
+- 계약 유효성 검사
+  - 시작일은 오늘 이후
+  - 종료일은 시작일 + 28일 이후
+  - 금액 범위: 10,000원 ~ 1,000,000원
+- 중복 요청 방지
+  - 동일한 계약 요청이 5초 이내에 중복 생성되는 것을 방지
+
+### 3. API 기능
+- 업체 조회 (키워드 자동완성)
+  - 최대 20개 결과 반환
+  - 빈 키워드 처리
+- 계약 목록 조회
+  - 페이징 (기본 5개, 최대 100개)
+  - 업체명, 상태, 날짜 범위 필터링
+  - 계약 상태 자동 업데이트
+
+### 4. 테스트 코드
+- 단위 테스트
+  - `ContractTest`: 도메인 모델 테스트
+  - `ContractServiceTest`: 서비스 레이어 테스트
+  - `CompanyServiceTest`: 업체 서비스 테스트
+  - `ContractControllerTest`: 컨트롤러 테스트
+- 통합 테스트
+  - `ContractIntegrationTest`: 전체 플로우 테스트
