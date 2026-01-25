@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-// import "./globals.css";
+import Layout from "@/src/components/layout/Layout";
+import Toast from "@/src/components/ui/Toast";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "광고 플랫폼",
@@ -13,7 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <Layout>
+          {children}
+        </Layout>
+        <Toast />
+      </body>
     </html>
   );
 }

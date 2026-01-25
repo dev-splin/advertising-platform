@@ -1,6 +1,6 @@
 import { ApiError, extractErrorResponse } from './error-handler';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8081/api';
 
 /**
  * API 클라이언트 기본 설정

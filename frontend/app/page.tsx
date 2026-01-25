@@ -1,14 +1,22 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
+  const router = useRouter();
+  
+  useEffect(() => {
+    // 홈 페이지 접속 시 광고 현황 조회 페이지로 리다이렉트
+    router.push('/contracts');
+  }, [router]);
+  
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          광고 플랫폼
-        </h1>
-        <p className="text-center text-gray-600">
-          광고 플랫폼에 오신 것을 환영합니다.
-        </p>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">광고 플랫폼</h1>
+        <p className="text-gray-600">페이지를 불러오는 중...</p>
       </div>
-    </main>
+    </div>
   );
 }
