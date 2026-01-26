@@ -1,6 +1,6 @@
 -- 초기 광고 상품 데이터
 INSERT INTO product (id, name, description, created_at, updated_at) VALUES
-(1, '노출 보장형 광고', '고객이 활발하게 탐색하는 지면에 최적화되어 숙소가 유동적으로 노출됩니다.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(1, '노출 보장형 광고', '특정 기간 동안 광고 노출을 보장하는 상품입니다.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 초기 업체 데이터
 INSERT INTO company (id, company_number, name, type, created_at, updated_at) VALUES
