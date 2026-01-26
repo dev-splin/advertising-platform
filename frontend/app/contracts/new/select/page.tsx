@@ -1,25 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { productService } from '@/src/lib/api/services';
-import toast from 'react-hot-toast';
+import { useProducts } from '@/src/lib/api/hooks/useProducts';
 import type { Product } from '@/src/types/api';
 
 export default function ProductSelectPage() {
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: products = [], isLoading: loading, error } = useProducts();
 
-  useEffect(() => {
-    productService.getAllProducts()
-      .then(setProducts)
-      .catch((error) => {
-        toast.error('상품 목록을 불러오는데 실패했습니다.');
-        console.error(error);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  if (error) {
+    return (
+      <div className="w-full">
+        <h1 className="text-3xl font-bold mb-8">광고 상품 선택</h1>
+        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+          <p className="text-red-600">상품 목록을 불러오는데 실패했습니다.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleProductSelect = (product: Product) => {
     router.push(`/contracts/new?productId=${product.id}`);

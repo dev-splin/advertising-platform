@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { contractService, companyService } from '@/src/lib/api/services';
-import { ApiError } from '@/src/lib/api/error-handler';
+import { useContracts } from '@/src/lib/api/hooks/useContracts';
+import { useSearchCompanies } from '@/src/lib/api/hooks/useCompanies';
 import toast from 'react-hot-toast';
 import AutoComplete from '@/src/components/ui/AutoComplete';
 import { formatCurrency } from '@/src/lib/utils/format';
 import { formatDate, getToday, addDaysToDate } from '@/src/lib/utils/date';
-import type { Contract, ContractStatusType, Company } from '@/src/types/api';
+import type { ContractStatusType } from '@/src/types/api';
 
 const statusOptions: { value: ContractStatusType; label: string }[] = [
   { value: 'PENDING', label: '집행전' },
@@ -33,78 +33,74 @@ const statusColors: Record<string, string> = {
 
 export default function ContractsPage() {
   const router = useRouter();
-  const [contracts, setContracts] = useState<Contract[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
   
   // 필터 상태
   const [companySearchKeyword, setCompanySearchKeyword] = useState('');
-  const [companySearchResults, setCompanySearchResults] = useState<Company[]>([]);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<{ id: number; name: string } | null>(null);
   const [selectedStatuses, setSelectedStatuses] = useState<ContractStatusType[]>([]);
   const [allStatusSelected, setAllStatusSelected] = useState(false);
   const [startDate, setStartDate] = useState(getToday());
   const [endDate, setEndDate] = useState(addDaysToDate(getToday(), 28));
 
-  // 업체 검색 (자동완성)
+  // 업체 검색 (자동완성) - React Query
+  const { data: companySearchResults = [] } = useSearchCompanies(companySearchKeyword);
+
+  // 계약 목록 조회 - React Query
+  const { data: contractsData, isLoading: loading, error } = useContracts({
+    companyName: selectedCompany?.name,
+    statuses: selectedStatuses.length > 0 ? selectedStatuses : undefined,
+    startDate,
+    endDate,
+    page,
+    size: 5,
+  });
+
+  const contracts = contractsData?.content || [];
+  const totalPages = contractsData?.totalPages || 0;
+  const totalElements = contractsData?.totalElements || 0;
+
+  // 에러 처리
   useEffect(() => {
-    if (companySearchKeyword.trim().length > 0) {
-      const timeoutId = setTimeout(() => {
-        companyService.searchCompanies(companySearchKeyword)
-          .then(setCompanySearchResults)
-          .catch(() => {
-            setCompanySearchResults([]);
-          });
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    } else {
-      setCompanySearchResults([]);
+    if (error) {
+      toast.error('계약 목록을 불러오는데 실패했습니다.');
     }
-  }, [companySearchKeyword]);
+  }, [error]);
 
-  // 계약 목록 조회
-  const fetchContracts = async (pageNum: number = 0) => {
-    setLoading(true);
-    try {
-      const response = await contractService.getContracts({
-        companyName: selectedCompany?.name,
-        statuses: selectedStatuses.length > 0 ? selectedStatuses : undefined,
-        startDate,
-        endDate,
-        page: pageNum,
-        size: 5,
-      });
-
-      setContracts(response.content);
-      setPage(response.page);
-      setTotalPages(response.totalPages);
-      setTotalElements(response.totalElements);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        toast.error(error.errorResponse.message);
-      } else {
-        toast.error('계약 목록을 불러오는데 실패했습니다.');
+  // 시작일 변경 시 종료일 자동 업데이트 (최소값: 시작일 + 28일)
+  useEffect(() => {
+    if (startDate) {
+      const minEndDate = addDaysToDate(startDate, 28);
+      // 현재 종료일이 최소값보다 작으면 업데이트
+      if (!endDate || endDate < minEndDate) {
+        setEndDate(minEndDate);
       }
-    } finally {
-      setLoading(false);
     }
-  };
-
-  // 필터 변경 시 첫 페이지로 리셋하고 조회
-  useEffect(() => {
-    setPage(0);
-    fetchContracts(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate]);
+
+  // 검색 조건을 sessionStorage에 저장 (상세 페이지에서 뒤로가기 시 사용)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCompany?.name) {
+      params.append('companyName', selectedCompany.name);
+    }
+    if (selectedStatuses.length > 0) {
+      params.append('statuses', selectedStatuses.join(','));
+    }
+    if (startDate) {
+      params.append('startDate', startDate);
+    }
+    if (endDate) {
+      params.append('endDate', endDate);
+    }
+    sessionStorage.setItem('contractListSearchConditions', params.toString());
   }, [selectedCompany, selectedStatuses, startDate, endDate]);
 
-  // 페이지 변경 시 조회
+  // 필터 변경 시 첫 페이지로 리셋
   useEffect(() => {
-    fetchContracts(page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+    setPage(0);
+  }, [selectedCompany, selectedStatuses, startDate, endDate]);
 
   // 전체 상태 선택/해제
   const handleAllStatusToggle = () => {
@@ -137,14 +133,13 @@ export default function ContractsPage() {
     setAllStatusSelected(selectedStatuses.length === statusOptions.length);
   }, [selectedStatuses]);
 
-  // 검색 버튼 클릭 (필터 변경 시 자동으로 조회되므로 실제로는 필요 없지만 유지)
+  // 검색 버튼 클릭
   const handleSearch = () => {
     setPage(0);
-    fetchContracts(0);
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="w-full">
       <h1 className="text-3xl font-bold mb-8">광고 현황 조회</h1>
 
       {/* 필터 영역 */}
@@ -157,7 +152,7 @@ export default function ContractsPage() {
             </label>
             <AutoComplete
               items={companySearchResults}
-              onSelect={setSelectedCompany}
+              onSelect={(company) => setSelectedCompany(company ? { id: company.id, name: company.name } : null)}
               placeholder="업체명을 입력하세요"
               value={companySearchKeyword}
               onChange={setCompanySearchKeyword}
@@ -214,7 +209,7 @@ export default function ContractsPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                min={startDate}
+                min={startDate ? addDaysToDate(startDate, 28) : undefined}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

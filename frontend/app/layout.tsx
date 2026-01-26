@@ -1,25 +1,38 @@
-import type { Metadata } from "next";
+'use client';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 import Layout from "@/src/components/layout/Layout";
 import Toast from "@/src/components/ui/Toast";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "광고 플랫폼",
-  description: "광고 플랫폼 애플리케이션",
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000, // 1 minute
+            refetchOnWindowFocus: false,
+            retry: 1,
+          },
+        },
+      })
+  );
+
   return (
     <html lang="ko">
       <body>
-        <Layout>
-          {children}
-        </Layout>
-        <Toast />
+        <QueryClientProvider client={queryClient}>
+          <Layout>
+            {children}
+          </Layout>
+          <Toast />
+        </QueryClientProvider>
       </body>
     </html>
   );

@@ -1,50 +1,69 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { contractService } from '@/src/lib/api/services';
-import { ApiError } from '@/src/lib/api/error-handler';
-import toast from 'react-hot-toast';
-import { formatCurrency } from '@/src/lib/utils/format';
-import { formatDate } from '@/src/lib/utils/date';
-import type { Contract } from '@/src/types/api';
+import { useEffect, useState } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { formatCurrency } from "@/src/lib/utils/format";
+import { formatDate } from "@/src/lib/utils/date";
+import { useContract } from "@/src/lib/api/hooks/useContracts";
 
 const statusLabels: Record<string, string> = {
-  PENDING: '집행전',
-  IN_PROGRESS: '진행중',
-  CANCELLED: '광고취소',
-  COMPLETED: '광고종료',
+  PENDING: "집행전",
+  IN_PROGRESS: "진행중",
+  CANCELLED: "광고취소",
+  COMPLETED: "광고종료",
 };
 
 const statusColors: Record<string, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  IN_PROGRESS: 'bg-blue-100 text-blue-800',
-  CANCELLED: 'bg-red-100 text-red-800',
-  COMPLETED: 'bg-gray-100 text-gray-800',
+  PENDING: "bg-yellow-100 text-yellow-800",
+  IN_PROGRESS: "bg-blue-100 text-blue-800",
+  CANCELLED: "bg-red-100 text-red-800",
+  COMPLETED: "bg-gray-100 text-gray-800",
 };
 
 export default function ContractDetailPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const contractId = params.id as string;
-  const [contract, setContract] = useState<Contract | null>(null);
-  const [loading, setLoading] = useState(true);
+  const from = searchParams.get("from");
+  const [searchConditions, setSearchConditions] = useState<string>("");
+
+  // 계약 상세 조회 - React Query
+  const {
+    data: contract,
+    isLoading: loading,
+    error,
+  } = useContract(contractId ? Number(contractId) : null);
 
   useEffect(() => {
-    if (!contractId) return;
+    // 검색 조건 저장 (뒤로가기 시 유지)
+    const savedConditions = sessionStorage.getItem(
+      "contractListSearchConditions",
+    );
+    if (savedConditions) {
+      setSearchConditions(savedConditions);
+    }
+  }, []);
 
-    contractService.getContractById(Number(contractId))
-      .then(setContract)
-      .catch((error) => {
-        if (error instanceof ApiError) {
-          toast.error(error.errorResponse.message);
-        } else {
-          toast.error('계약 정보를 불러오는데 실패했습니다.');
-        }
-        router.push('/contracts');
-      })
-      .finally(() => setLoading(false));
-  }, [contractId, router]);
+  useEffect(() => {
+    if (error) {
+      router.push("/contracts");
+    }
+  }, [error, router]);
+
+  const handleBack = () => {
+    if (from === "contract") {
+      // '광고 계약' 화면에서 진입했을 시: '광고 상품 선택' 화면으로 이동
+      router.push("/contracts/new/select");
+    } else {
+      // '광고 현황 조회' 화면에서 진입했을 시: 광고 현황 조회 페이지로 이동(검색 조건 유지)
+      if (searchConditions) {
+        router.push(`/contracts?${searchConditions}`);
+      } else {
+        router.push("/contracts");
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -62,10 +81,10 @@ export default function ContractDetailPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full">
       <div className="mb-6">
         <button
-          onClick={() => router.back()}
+          onClick={handleBack}
           className="text-blue-600 hover:text-blue-800 font-medium"
         >
           ← 뒤로가기
@@ -98,7 +117,9 @@ export default function ContractDetailPage() {
             상품명
           </label>
           <p className="text-lg">{contract.product.name}</p>
-          <p className="text-sm text-gray-600 mt-1">{contract.product.description}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {contract.product.description}
+          </p>
         </div>
 
         {/* 계약 기간 */}
@@ -116,7 +137,9 @@ export default function ContractDetailPage() {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             계약 금액
           </label>
-          <p className="text-lg font-semibold">{formatCurrency(contract.amount)}</p>
+          <p className="text-lg font-semibold">
+            {formatCurrency(contract.amount)}
+          </p>
         </div>
 
         {/* 계약 상태 */}
@@ -139,7 +162,7 @@ export default function ContractDetailPage() {
             계약 일시
           </label>
           <p className="text-sm text-gray-600">
-            {new Date(contract.createdAt).toLocaleString('ko-KR')}
+            {new Date(contract.createdAt).toLocaleString("ko-KR")}
           </p>
         </div>
       </div>
