@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useContracts } from '@/src/lib/api/hooks/useContracts';
 import { useSearchCompanies } from '@/src/lib/api/hooks/useCompanies';
-import toast from 'react-hot-toast';
+import { toastError } from '@/src/lib/utils/toast';
 import AutoComplete from '@/src/components/ui/AutoComplete';
 import { formatCurrency } from '@/src/lib/utils/format';
 import { formatDate, getToday, addDaysToDate } from '@/src/lib/utils/date';
@@ -63,7 +63,7 @@ export default function ContractsPage() {
   // 에러 처리
   useEffect(() => {
     if (error) {
-      toast.error('계약 목록을 불러오는데 실패했습니다.');
+      toastError('계약 목록을 불러오는데 실패했습니다.');
     }
   }, [error]);
 

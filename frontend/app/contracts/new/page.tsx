@@ -6,7 +6,7 @@ import { useProduct } from "@/src/lib/api/hooks/useProducts";
 import { useCompanies } from "@/src/lib/api/hooks/useCompanies";
 import { useCreateContract } from "@/src/lib/api/hooks/useContracts";
 import { ApiError } from "@/src/lib/api/error-handler";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "@/src/lib/utils/toast";
 import { parseNumber } from "@/src/lib/utils/format";
 import { getToday, addDaysToDate } from "@/src/lib/utils/date";
 import type { Company, ContractRequest } from "@/src/types/api";
@@ -124,31 +124,28 @@ export default function ContractNewPage() {
       amount: parseNumber(amount),
     };
 
-    createContractMutation.mutate(request, {
-      onSuccess: (contract) => {
-        toast.success(
-          `${selectedProduct.name}으로 계약 생성에 성공했습니다.\n${startDate}부터 광고 집행될 예정입니다.`,
-          { duration: 5000 },
-        );
-        // 계약 상세 페이지로 이동 (진입 경로 정보 전달)
-        router.push(`/contracts/${contract.id}?from=contract`);
-      },
-      onError: (error: unknown) => {
-        if (error instanceof ApiError) {
-          const errorMessage = error.errorResponse.message;
-          const fieldErrors = error.getAllFieldErrors();
+    try {
+      const contract = await createContractMutation.mutateAsync(request);
+      toastSuccess(
+        `${selectedProduct.name}으로 계약 생성에 성공했습니다.\n${startDate}부터 광고 집행될 예정입니다.`,
+      );
+      // 계약 상세 페이지로 이동 (진입 경로 정보 전달)
+      router.push(`/contracts/${contract.id}?from=contract`);
+    } catch (error: unknown) {
+      if (error instanceof ApiError) {
+        const errorMessage = error.errorResponse.message;
+        const fieldErrors = error.getAllFieldErrors();
 
-          if (Object.keys(fieldErrors).length > 0) {
-            setErrors(fieldErrors);
-            toast.error("입력값을 확인해주세요.");
-          } else {
-            toast.error(errorMessage);
-          }
+        if (Object.keys(fieldErrors).length > 0) {
+          setErrors(fieldErrors);
+          toastError("입력값을 확인해주세요.");
         } else {
-          toast.error("계약 생성에 실패했습니다.");
+          toastError(errorMessage);
         }
-      },
-    });
+      } else {
+        toastError("계약 생성에 실패했습니다.");
+      }
+    }
   };
 
   // 로딩 중이거나 상품이 없으면 로딩 표시
