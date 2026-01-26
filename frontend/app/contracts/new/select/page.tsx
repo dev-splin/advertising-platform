@@ -27,7 +27,7 @@ export default function ProductSelectPage() {
 
   if (products.length === 0 && !loading) {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full">
         <h1 className="text-3xl font-bold mb-8">광고 상품 선택</h1>
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
           <p className="text-gray-600">등록된 상품이 없습니다.</p>
@@ -48,7 +48,7 @@ export default function ProductSelectPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full">
       <h1 className="text-3xl font-bold mb-8">광고 상품 선택</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
