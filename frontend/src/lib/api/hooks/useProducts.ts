@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { queries } from '../queryKeyFactories';
+import { queries } from '@/src/lib/api/queryKeyFactories';
 
 /**
  * 전체 상품 조회 Hook

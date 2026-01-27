@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { formatNumber } from "@/src/lib/utils/format";
 
 interface ContractAmountProps {
   error?: string;
+  value?: string;
   onChange: (amount: string) => void;
-  onErrorChange?: (error: string | undefined) => void;
 }
 
 /**
@@ -14,36 +14,21 @@ interface ContractAmountProps {
  */
 export default function ContractAmount({
   error,
+  value = "",
   onChange,
-  onErrorChange,
 }: ContractAmountProps) {
-  const [amount, setAmount] = useState("");
-
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/,/g, "");
-    const numValue = parseInt(value, 10);
+    const inputValue = e.target.value.replace(/,/g, "");
+    const numValue = parseInt(inputValue, 10);
 
-    if (isNaN(numValue) && value !== "") return;
+    if (isNaN(numValue) && inputValue !== "") return;
 
-    if (value === "") {
-      setAmount("");
+    if (inputValue === "") {
       onChange("");
-      onErrorChange?.(undefined);
       return;
     }
 
-    if (numValue < 10000) {
-      const errorMessage = "계약 금액은 최소 10,000원 이상이어야 합니다.";
-      onErrorChange?.(errorMessage);
-    } else if (numValue > 1000000) {
-      const errorMessage = "계약 금액은 최대 1,000,000원 이하여야 합니다.";
-      onErrorChange?.(errorMessage);
-    } else {
-      onErrorChange?.(undefined);
-    }
-
     const formattedAmount = formatNumber(numValue);
-    setAmount(formattedAmount);
     onChange(formattedAmount);
   };
 
@@ -55,7 +40,7 @@ export default function ContractAmount({
       <div className="relative">
         <input
           type="text"
-          value={amount}
+          value={value || ""}
           onChange={handleAmountChange}
           placeholder="100,000"
           className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${

@@ -3,4 +3,4 @@
  */
 
 // 에러 응답 타입은 error.ts에서 export
-export * from './error';
+export * from '@/src/types/error';

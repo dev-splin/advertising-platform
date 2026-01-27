@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contractService } from '../services/contract';
-import { queries } from '../queryKeyFactories';
+import { contractService } from '@/src/lib/api/services/contract';
+import { queries } from '@/src/lib/api/queryKeyFactories';
 import type { ContractListRequest, ContractRequest } from '@/src/types/api';
 
 /**

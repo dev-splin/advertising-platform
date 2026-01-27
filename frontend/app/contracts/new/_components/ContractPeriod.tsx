@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { getToday, addDaysToDate } from "@/src/lib/utils/date";
 
 interface ContractPeriodProps {
@@ -23,15 +22,6 @@ export default function ContractPeriod({
   onStartDateChange,
   onEndDateChange,
 }: ContractPeriodProps) {
-  // 시작일 변경 시 종료일 자동 업데이트
-  useEffect(() => {
-    if (startDate) {
-      const newEndDate = addDaysToDate(startDate, 28);
-      onEndDateChange(newEndDate);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate]);
-
   const getMinEndDate = () => {
     if (!startDate) return getToday();
     return addDaysToDate(startDate, 28);

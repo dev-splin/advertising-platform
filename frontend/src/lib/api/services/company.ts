@@ -1,4 +1,4 @@
-import { apiClient } from "../client";
+import { apiClient } from "@/src/lib/api/client";
 import type { Company } from "@/src/types/api";
 
 /**

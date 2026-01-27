@@ -1,5 +1,5 @@
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { contractService } from "../services/contract";
+import { contractService } from "@/src/lib/api/services/contract";
 import type { ContractListRequest } from "@/src/types/api";
 
 /**

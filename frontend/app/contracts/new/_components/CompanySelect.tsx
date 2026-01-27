@@ -7,8 +7,8 @@ import type { Company } from "@/src/types/api";
 interface CompanySelectProps {
   companies: Company[];
   error?: string;
+  value?: number;
   onSelect: (company: Company | null) => void;
-  onErrorChange?: (error: string | undefined) => void;
 }
 
 /**
@@ -17,12 +17,28 @@ interface CompanySelectProps {
 export default function CompanySelect({
   companies,
   error,
+  value,
   onSelect,
-  onErrorChange,
 }: CompanySelectProps) {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [companySearchKeyword, setCompanySearchKeyword] = useState("");
   const selectedCompanyRef = useRef<Company | null>(null);
+
+  // value가 변경되면 selectedCompany 업데이트
+  useEffect(() => {
+    if (value && value > 0) {
+      const company = companies.find((c) => c.id === value);
+      if (company && company !== selectedCompany) {
+        setSelectedCompany(company);
+        selectedCompanyRef.current = company;
+        setCompanySearchKeyword(company.name);
+      }
+    } else if (!value || value === 0) {
+      setSelectedCompany(null);
+      selectedCompanyRef.current = null;
+      setCompanySearchKeyword("");
+    }
+  }, [value, companies, selectedCompany]);
 
   // selectedCompany가 변경될 때 ref도 업데이트
   useEffect(() => {
@@ -33,7 +49,6 @@ export default function CompanySelect({
     setSelectedCompany(company);
     selectedCompanyRef.current = company;
     setCompanySearchKeyword(company.name);
-    onErrorChange?.(undefined);
     onSelect(company);
   };
 

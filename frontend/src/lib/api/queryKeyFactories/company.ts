@@ -1,5 +1,5 @@
 import { createQueryKeys } from "@lukemorales/query-key-factory";
-import { companyService } from "../services/company";
+import { companyService } from "@/src/lib/api/services/company";
 
 /**
  * 업체 Query Key Factory

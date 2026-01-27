@@ -1,4 +1,4 @@
-import { ApiError, extractErrorResponse } from './error-handler';
+import { ApiError, extractErrorResponse } from '@/src/lib/api/error-handler';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8081/api';
 

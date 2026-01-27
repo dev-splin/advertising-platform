@@ -1,7 +1,7 @@
 import { mergeQueryKeys } from "@lukemorales/query-key-factory";
-import product from "./product";
-import company from "./company";
-import contract from "./contract";
+import product from "@/src/lib/api/queryKeyFactories/product";
+import company from "@/src/lib/api/queryKeyFactories/company";
+import contract from "@/src/lib/api/queryKeyFactories/contract";
 
 /**
  * 통합 Query Keys

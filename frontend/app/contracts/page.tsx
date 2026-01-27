@@ -7,8 +7,8 @@ import { useSearchCompanies } from "@/src/lib/api/hooks/useCompanies";
 import { toastError } from "@/src/lib/utils/toast";
 import { getToday, addDaysToDate } from "@/src/lib/utils/date";
 import type { ContractStatusType } from "@/src/types/api";
-import ContractSearch from "./_components/ContractSearch";
-import ContractList from "./_components/ContractList";
+import ContractSearch from "@/app/contracts/_components/ContractSearch";
+import ContractList from "@/app/contracts/_components/ContractList";
 
 interface SearchFormData {
   selectedCompany: { id: number; name: string } | null;
