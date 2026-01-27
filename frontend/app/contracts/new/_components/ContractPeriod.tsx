@@ -30,10 +30,11 @@ export default function ContractPeriod({
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
           계약 시작일 <span className="text-red-500">*</span>
         </label>
         <input
+          id="startDate"
           type="date"
           value={startDate}
           onChange={(e) => onStartDateChange(e.target.value)}
@@ -48,10 +49,11 @@ export default function ContractPeriod({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
           계약 종료일 <span className="text-red-500">*</span>
         </label>
         <input
+          id="endDate"
           type="date"
           value={endDate}
           onChange={(e) => onEndDateChange(e.target.value)}

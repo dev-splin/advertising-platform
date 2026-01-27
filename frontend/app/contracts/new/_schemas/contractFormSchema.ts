@@ -13,7 +13,13 @@ export const contractFormSchema = z
   })
   .refine(
     (data) => {
+      if (!data.startDate || data.startDate.trim() === "") {
+        return true;
+      }
       const startDate = new Date(data.startDate);
+      if (isNaN(startDate.getTime())) {
+        return true;
+      }
       const today = new Date(getToday());
       return startDate >= today;
     },
@@ -24,7 +30,14 @@ export const contractFormSchema = z
   )
   .refine(
     (data) => {
+      if (!data.endDate || data.endDate.trim() === "" || !data.startDate || data.startDate.trim() === "") {
+        return true;
+      }
       const endDate = new Date(data.endDate);
+      const startDate = new Date(data.startDate);
+      if (isNaN(endDate.getTime()) || isNaN(startDate.getTime())) {
+        return true;
+      }
       const minEndDate = new Date(addDaysToDate(data.startDate, 28));
       return endDate >= minEndDate;
     },

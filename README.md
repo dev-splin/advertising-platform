@@ -2,29 +2,40 @@
 
 광고 상품을 계약하고, 계약 내역을 조회할 수 있는 광고 상품 구매 서비스입니다.
 
+<br/>
+
 ## 기술 스택
 
 ---
 
 ### Frontend
 
-- **Framework**: Next.js 14.0.0
+- **Framework**: Next.js 14.0.0 (App Router)
 - **Language**: TypeScript 5.2.2
 - **Styling**: Tailwind CSS 3.3.5
-- **Library**: React 18.2.0
+- **UI Library**: React 18.2.0
 - **Form Management**: react-hook-form 7.48.2
-- **Validation**: zod 3.22.4
+- **Validation**: zod 3.22.4, @hookform/resolvers 3.3.4
 - **Data Fetching**: @tanstack/react-query 5.0.0
 - **Query Key Management**: @lukemorales/query-key-factory 1.3.4
+- **Testing**: Vitest, React Testing Library, @testing-library/jest-dom
+- **Utilities**: date-fns 2.30.0, js-cookie 3.0.5, react-hot-toast 2.4.1
 
 ### Backend
 
 - **Framework**: Spring Boot 3.2.0
 - **Language**: Java 17+
-- **ORM**: Spring Data JPA
+- **ORM**: Spring Data JPA (Hibernate)
 - **Database**: H2 Database (In-Memory)
+  - **JDBC URL**: `jdbc:h2:mem:advertisingdb`
+  - **Username**: `sa`
+  - **Password**: (empty)
+  - **Mode**: MySQL compatibility mode
 - **Build Tool**: Maven
-- **Library**: Lombok
+- **Libraries**: Lombok, Jakarta Validation
+- **Testing**: JUnit 5, AssertJ, Mockito, Spring Boot Test
+
+<br/>
 
 ## 프로젝트 구조
 
@@ -34,15 +45,22 @@
 advertising-platform/
 ├── frontend/                    # Next.js Frontend
 │   ├── app/                    # Next.js App Router
+│   │   ├── contracts/          # 계약 관련 페이지
+│   │   │   ├── page.tsx       # 계약 목록
+│   │   │   ├── [id]/page.tsx  # 계약 상세
+│   │   │   └── new/           # 계약 생성
+│   │   └── layout.tsx         # 루트 레이아웃
 │   ├── src/
 │   │   ├── types/              # TypeScript 타입 정의
-│   │   │   └── error.ts        # ErrorResponse 타입
-│   │   └── lib/
-│   │       └── api/            # API 클라이언트 및 에러 처리
-│   ├── components/             # React 컴포넌트
-│   ├── public/                 # 정적 파일
-│   ├── tailwind.config.ts      # Tailwind 설정
-│   ├── tsconfig.json           # TypeScript 설정
+│   │   ├── lib/
+│   │   │   ├── api/            # API 클라이언트
+│   │   │   │   ├── services/   # 도메인별 API 서비스
+│   │   │   │   ├── queryKeyFactories/  # Query Key Factory
+│   │   │   │   └── hooks/      # TanStack Query Hooks
+│   │   │   └── utils/          # 유틸리티 함수
+│   │   └── components/         # React 컴포넌트
+│   │       ├── layout/         # 레이아웃 컴포넌트
+│   │       └── ui/             # UI 컴포넌트
 │   └── package.json
 │
 ├── backend/                    # Spring Boot Backend
@@ -71,6 +89,8 @@ advertising-platform/
 └── README.md                   # 프로젝트 문서
 ```
 
+<br/>
+
 ## 실행 방법
 
 ---
@@ -94,14 +114,14 @@ cd backend
 mvn spring-boot:run
 ```
 
-서버가 시작되면 `http://localhost:8080/api`에서 API를 사용할 수 있습니다.
+**서버 정보**:
 
-**H2 Console 접속**:
-
-- URL: `http://localhost:8080/api/h2-console`
-- JDBC URL: `jdbc:h2:mem:advertisingdb`
-- Username: `sa`
-- Password: (비워두기)
+- **포트**: 8080
+- **Base URL**: `http://localhost:8080/api`
+- **H2 Console**: `http://localhost:8080/api/h2-console`
+  - JDBC URL: `jdbc:h2:mem:advertisingdb`
+  - Username: `sa`
+  - Password: (비워두기)
 
 ### Frontend 실행
 
@@ -117,21 +137,54 @@ cd frontend
 npm install
 ```
 
-3. 개발 서버 실행
+- **포트**: 3000
+- **URL**: `http://localhost:3000`
 
-```bash
-npm run dev
-```
+#### 3. 환경 변수 설정 (Frontend)
 
-개발 서버가 시작되면 `http://localhost:3000`에서 애플리케이션을 확인할 수 있습니다.
+Frontend 디렉토리에 `.env.local` 파일을 생성:
 
-### 환경 변수 설정 (Frontend)
-
-Frontend 디렉토리에 `.env.local` 파일을 생성하여 API 베이스 URL을 설정할 수 있습니다:
-
-```
+```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api
 ```
+
+### 테스트 실행
+
+#### Backend 테스트
+
+```bash
+cd backend
+
+# 모든 테스트 실행
+mvn test
+
+# 특정 테스트 클래스 실행
+mvn test -Dtest=ContractServiceTest
+
+# 테스트 커버리지 리포트 생성
+mvn test jacoco:report
+# 리포트 위치: target/site/jacoco/index.html
+```
+
+#### Frontend 테스트
+
+```bash
+cd frontend
+
+# 모든 테스트 실행
+npm test
+
+# Watch 모드로 실행
+npm test -- --watch
+
+# UI 모드로 실행
+npm run test:ui
+
+# 커버리지 리포트 생성
+npm run test:coverage
+```
+
+<br/>
 
 ## 공통 에러 응답 규격
 
@@ -171,31 +224,7 @@ Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입�
 - `NOT_FOUND`: 리소스를 찾을 수 없음
 - `INTERNAL_ERROR`: 서버 내부 오류
 
-### 사용 예시
-
-**Backend (Java)**:
-
-```java
-ErrorResponse errorResponse = ErrorResponse.builder()
-    .code("VALIDATION_ERROR")
-    .message("입력값 검증에 실패했습니다.")
-    .details(Map.of("amount", "계약 금액은 최소 10,000원 이상이어야 합니다."))
-    .timestamp(LocalDateTime.now())
-    .status(HttpStatus.BAD_REQUEST.value())
-    .build();
-```
-
-**Frontend (TypeScript)**:
-
-```typescript
-interface ErrorResponse {
-  code: string;
-  message: string;
-  details?: Record<string, string | string[]>;
-  timestamp: string;
-  status: number;
-}
-```
+<br/>
 
 ## API 엔드포인트
 
@@ -226,6 +255,8 @@ interface ErrorResponse {
   ```
 - `GET /api/contracts/{id}` - 계약 상세 조회
 - `GET /api/contracts?companyName={name}&statuses={status}&startDate={date}&endDate={date}&page={page}&size={size}` - 계약 목록 조회 (페이징)
+
+<br/>
 
 ## 가정 사항
 
@@ -261,23 +292,7 @@ interface ErrorResponse {
 4. **계약 기간 제한**: 계약 종료일은 계약 시작일로부터 최소 28일 이후여야 합니다.
 5. **페이징 기본값**: 페이지당 5건 (최대 5건)
 
-## 테스트 방법
-
----
-
-### Backend 테스트
-
-```bash
-cd backend
-mvn test
-```
-
-### Frontend 테스트
-
-```bash
-cd frontend
-npm run test
-```
+<br/>
 
 ## 설계 및 구현 설명
 
@@ -304,7 +319,66 @@ npm run test
 - **Company**: 업체 정보
 - **Contract**: 광고 계약 정보 (Product, Company와 다대일 관계)
 
+### ERD 구조
+
+```
+┌─────────────┐         ┌──────────────┐
+│   Company   │         │   Product    │
+├─────────────┤         ├──────────────┤
+│ id (PK)     │         │ id (PK)      │
+│ company_no  │         │ name         │
+│ name        │         │ description  │
+│ type        │         │ created_at   │
+│ created_at  │         │ updated_at   │
+│ updated_at  │         └──────────────┘
+└─────────────┘                 │
+       │                        │
+       │                        │
+       │  Many                  │  Many
+       │  │                     │  │
+       │  │                     │  │
+       └──┼─────────────────────┘  │
+          │                        │
+          │                        │
+    ┌─────▼────────────────────────▼──────┐
+    │           Contract                  │
+    ├─────────────────────────────────────┤
+    │ id (PK)                             │
+    │ contract_number (UK)                │
+    │ company_id (FK)                     │
+    │ product_id (FK)                     │
+    │ start_date                          │
+    │ end_date                            │
+    │ amount                              │
+    │ status                              │
+    │ created_at                          │
+    │ updated_at                          │
+    └─────────────────────────────────────┘
+```
+
+**관계 설명**:
+
+- **Contract ↔ Company**: Many-to-One (N:1)
+  - 하나의 업체는 여러 계약을 가질 수 있음
+  - 하나의 계약은 하나의 업체에 속함
+  - `@ManyToOne(fetch = FetchType.LAZY)` 적용
+
+- **Contract ↔ Product**: Many-to-One (N:1)
+  - 하나의 상품은 여러 계약에 사용될 수 있음
+  - 하나의 계약은 하나의 상품에 속함
+  - `@ManyToOne(fetch = FetchType.LAZY)` 적용
+
+**제약 조건**:
+
+- `contract_number`: UNIQUE 제약
+- `company_id`, `product_id`: NOT NULL 제약
+- `start_date`, `end_date`, `amount`: NOT NULL 제약
+
+<br/>
+
 ## 개선 및 제약 사항
+
+---
 
 ### 개선 사항
 
@@ -330,6 +404,3 @@ npm run test
 - 로깅 및 모니터링 강화
 - API 문서화 (Swagger/OpenAPI)
 - 에러 바운더리 및 사용자 친화적 에러 메시지
-- E2E 테스트 추가
-
-#

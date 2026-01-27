@@ -95,8 +95,6 @@ public class ContractService {
      * 동일한 업체, 상품, 시작일, 종료일, 금액의 계약이 최근 5초 이내에 생성되었는지 확인합니다.
      */
     private boolean isDuplicateRequest(ContractRequest request) {
-        LocalDate fiveSecondsAgo = LocalDate.now();
-        // 실제로는 Redis나 캐시를 사용하는 것이 좋지만, 여기서는 DB 조회로 대체
         List<Contract> recentContracts = contractRepository.findAll().stream()
                 .filter(c -> c.getCompany().getId().equals(request.getCompanyId()))
                 .filter(c -> c.getProduct().getId().equals(request.getProductId()))
