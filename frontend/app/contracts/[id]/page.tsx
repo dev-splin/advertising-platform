@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/src/lib/utils/format";
 import { formatDate } from "@/src/lib/utils/date";
@@ -26,7 +26,6 @@ export default function ContractDetailPage() {
   const searchParams = useSearchParams();
   const contractId = params.id as string;
   const from = searchParams.get("from");
-  const [searchConditions, setSearchConditions] = useState<string>("");
 
   // 계약 상세 조회 - React Query
   const {
@@ -34,16 +33,6 @@ export default function ContractDetailPage() {
     isLoading: loading,
     error,
   } = useContract(contractId ? Number(contractId) : null);
-
-  useEffect(() => {
-    // 검색 조건 저장 (뒤로가기 시 유지)
-    const savedConditions = sessionStorage.getItem(
-      "contractListSearchConditions",
-    );
-    if (savedConditions) {
-      setSearchConditions(savedConditions);
-    }
-  }, []);
 
   useEffect(() => {
     if (error) {
@@ -56,12 +45,9 @@ export default function ContractDetailPage() {
       // '광고 계약' 화면에서 진입했을 시: '광고 상품 선택' 화면으로 이동
       router.push("/contracts/new/select");
     } else {
-      // '광고 현황 조회' 화면에서 진입했을 시: 광고 현황 조회 페이지로 이동(검색 조건 유지)
-      if (searchConditions) {
-        router.push(`/contracts?${searchConditions}`);
-      } else {
-        router.push("/contracts");
-      }
+      // '광고 현황 조회' 화면에서 진입했을 시: 광고 현황 조회 페이지로 이동
+      // 검색 조건은 cookie에서 자동으로 복원됨
+      router.push("/contracts");
     }
   };
 
