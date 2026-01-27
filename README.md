@@ -6,8 +6,6 @@
 
 ## 기술 스택
 
----
-
 ### Frontend
 
 - **Framework**: Next.js 14.0.0 (App Router)
@@ -38,8 +36,6 @@
 <br/>
 
 ## 프로젝트 구조
-
----
 
 ```
 advertising-platform/
@@ -92,8 +88,6 @@ advertising-platform/
 <br/>
 
 ## 실행 방법
-
----
 
 ### 사전 요구사항
 
@@ -188,8 +182,6 @@ npm run test:coverage
 
 ## 공통 에러 응답 규격
 
----
-
 Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입니다.
 
 ### JSON 구조
@@ -228,8 +220,6 @@ Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입�
 
 ## API 엔드포인트
 
----
-
 ### 상품 조회
 
 - `GET /api/products` - 전체 상품 조회
@@ -259,8 +249,6 @@ Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입�
 <br/>
 
 ## 가정 사항
-
----
 
 ### 초기 업체 데이터
 
@@ -295,8 +283,6 @@ Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입�
 <br/>
 
 ## 설계 및 구현 설명
-
----
 
 ### 아키텍처
 
@@ -377,8 +363,6 @@ Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입�
 <br/>
 
 ## 개선 및 제약 사항
-
----
 
 ### 개선 사항
 
