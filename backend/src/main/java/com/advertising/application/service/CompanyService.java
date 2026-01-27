@@ -2,6 +2,7 @@ package com.advertising.application.service;
 
 import com.advertising.application.dto.CompanyResponse;
 import com.advertising.common.exception.BusinessException;
+import com.advertising.common.exception.ErrorCode;
 import com.advertising.domain.entity.Company;
 import com.advertising.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class CompanyService {
     }
     
     /**
-     * 키워드로 업체를 검색합니다 (자동완성 기능).
+     * 키워드로 업체를 검색합니다
      * 업체명에 키워드가 포함된 업체를 최대 20개까지 반환합니다.
      */
     public List<CompanyResponse> searchCompanies(String keyword) {
@@ -65,7 +66,7 @@ public class CompanyService {
      */
     public CompanyResponse getCompanyById(Long id) {
         Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("COMPANY_NOT_FOUND", "업체를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMPANY_NOT_FOUND, "업체를 찾을 수 없습니다."));
         return toResponse(company);
     }
     

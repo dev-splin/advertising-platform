@@ -22,37 +22,47 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Contract {
+    /** 계약 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    /** 계약 번호 (고유값) */
     @Column(name = "contract_number", unique = true, nullable = false)
     private String contractNumber;
     
+    /** 계약 업체 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
     
+    /** 계약 상품 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
     
+    /** 계약 시작일 */
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     
+    /** 계약 종료일 */
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
     
+    /** 계약 금액 */
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
     
+    /** 계약 상태 */
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ContractStatus status;
     
+    /** 생성 일시 */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    /** 수정 일시 */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     

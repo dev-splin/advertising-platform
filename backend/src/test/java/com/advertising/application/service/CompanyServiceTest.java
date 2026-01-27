@@ -2,6 +2,7 @@ package com.advertising.application.service;
 
 import com.advertising.application.dto.CompanyResponse;
 import com.advertising.common.exception.BusinessException;
+import com.advertising.common.exception.ErrorCode;
 import com.advertising.domain.entity.Company;
 import com.advertising.domain.repository.CompanyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -132,6 +133,6 @@ class CompanyServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> companyService.getCompanyById(999L));
         
-        assertEquals("COMPANY_NOT_FOUND", exception.getErrorCode());
+        assertEquals(ErrorCode.COMPANY_NOT_FOUND.getCode(), exception.getErrorCode());
     }
 }

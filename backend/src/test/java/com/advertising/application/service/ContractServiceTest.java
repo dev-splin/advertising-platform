@@ -3,6 +3,7 @@ package com.advertising.application.service;
 import com.advertising.application.dto.ContractRequest;
 import com.advertising.application.dto.ContractResponse;
 import com.advertising.common.exception.BusinessException;
+import com.advertising.common.exception.ErrorCode;
 import com.advertising.domain.entity.Company;
 import com.advertising.domain.entity.Contract;
 import com.advertising.domain.entity.Product;
@@ -112,7 +113,7 @@ class ContractServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> contractService.createContract(validRequest));
         
-        assertEquals("COMPANY_NOT_FOUND", exception.getErrorCode());
+        assertEquals(ErrorCode.COMPANY_NOT_FOUND.getCode(), exception.getErrorCode());
         verify(contractRepository, never()).save(any());
     }
     
@@ -127,7 +128,7 @@ class ContractServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> contractService.createContract(validRequest));
         
-        assertEquals("PRODUCT_NOT_FOUND", exception.getErrorCode());
+        assertEquals(ErrorCode.PRODUCT_NOT_FOUND.getCode(), exception.getErrorCode());
         verify(contractRepository, never()).save(any());
     }
     
@@ -151,7 +152,7 @@ class ContractServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> contractService.createContract(invalidRequest));
         
-        assertEquals("INVALID_START_DATE", exception.getErrorCode());
+        assertEquals(ErrorCode.INVALID_START_DATE.getCode(), exception.getErrorCode());
         verify(contractRepository, never()).save(any());
     }
     
@@ -175,7 +176,7 @@ class ContractServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> contractService.createContract(invalidRequest));
         
-        assertEquals("INVALID_END_DATE", exception.getErrorCode());
+        assertEquals(ErrorCode.INVALID_END_DATE.getCode(), exception.getErrorCode());
         verify(contractRepository, never()).save(any());
     }
     
@@ -199,7 +200,7 @@ class ContractServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> contractService.createContract(invalidRequest));
         
-        assertEquals("INVALID_AMOUNT", exception.getErrorCode());
+        assertEquals(ErrorCode.INVALID_AMOUNT.getCode(), exception.getErrorCode());
         verify(contractRepository, never()).save(any());
     }
     
@@ -223,7 +224,7 @@ class ContractServiceTest {
         BusinessException exception = assertThrows(BusinessException.class, 
                 () -> contractService.createContract(invalidRequest));
         
-        assertEquals("INVALID_AMOUNT", exception.getErrorCode());
+        assertEquals(ErrorCode.INVALID_AMOUNT.getCode(), exception.getErrorCode());
         verify(contractRepository, never()).save(any());
     }
 }

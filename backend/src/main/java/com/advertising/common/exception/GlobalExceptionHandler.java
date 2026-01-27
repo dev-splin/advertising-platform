@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         });
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("VALIDATION_ERROR")
+                .code(ErrorCode.VALIDATION_ERROR.getCode())
                 .message("입력값 검증에 실패했습니다.")
                 .details(details)
                 .timestamp(LocalDateTime.now())
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("BAD_REQUEST")
+                .code(ErrorCode.BAD_REQUEST.getCode())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("INVALID_STATE")
+                .code(ErrorCode.INVALID_STATE.getCode())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error occurred", ex);
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("INTERNAL_ERROR")
+                .code(ErrorCode.INTERNAL_ERROR.getCode())
                 .message("서버 내부 오류가 발생했습니다.")
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
