@@ -369,12 +369,10 @@ Frontend와 Backend 간 통신 시 사용하는 공통 에러 응답 규격입�
 - [Frontend] react-hook-form + zod를 통한 폼 관리 및 유효성 검사
 - [Frontend] TanStack Query를 통한 서버 상태 관리
 - [Frontend] Query Key Factory를 통한 Query Key 중앙 관리
-- [Frontend] 절대경로 import (@/) 통일
 - [Frontend] 컴포넌트 모듈화 및 분리
 - [Frontend] 쿠키를 통한 검색 조건 저장
 - [Frontend] 디바운스를 통한 API 호출 최적화
 - [Backend] ErrorCode enum을 통한 에러 코드 중앙 관리
-- [Backend] 엔티티 컬럼 JavaDoc 주석 추가
 
 ### 제약 사항
 
