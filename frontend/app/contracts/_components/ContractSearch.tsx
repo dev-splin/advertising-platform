@@ -33,7 +33,6 @@ export default function ContractSearch({
   onCompanySearchKeywordChange,
   onSearch,
 }: ContractSearchProps) {
-  console.log("defaultValues", defaultValues);
   const { control, handleSubmit, watch, setValue, reset } =
     useForm<SearchFormData>({
       defaultValues,
