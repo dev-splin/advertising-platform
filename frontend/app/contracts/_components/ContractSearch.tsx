@@ -33,14 +33,20 @@ export default function ContractSearch({
   onCompanySearchKeywordChange,
   onSearch,
 }: ContractSearchProps) {
-  const { control, handleSubmit, watch, setValue } = useForm<SearchFormData>({
-    defaultValues,
-    mode: "onChange",
-  });
+  console.log("defaultValues", defaultValues);
+  const { control, handleSubmit, watch, setValue, reset } =
+    useForm<SearchFormData>({
+      defaultValues,
+      mode: "onChange",
+    });
 
   const startDate = watch("startDate");
   const selectedStatuses = watch("selectedStatuses");
   const allStatusSelected = selectedStatuses.length === statusOptions.length;
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues]);
 
   // 시작일 변경 시 종료일 자동 업데이트
   useEffect(() => {
